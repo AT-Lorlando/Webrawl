@@ -1,0 +1,23 @@
+{
+  "extends": "@adonisjs/tsconfig/tsconfig.app.json",
+  "include": ["**/*"],
+  "exclude": ["node_modules", "build"],
+  "compilerOptions": {
+    "strict": true,
+    "outDir": "build",
+    "rootDir": "./",
+    "sourceMap": true,
+    "paths": {
+      "App/*": ["./app/*"],
+      "Config/*": ["./config/*"],
+      "Contracts/*": ["./contracts/*"],
+      "Database/*": ["./database/*"]
+    },
+    "types": [
+      "@adonisjs/core",
+      "@adonisjs/repl",
+      "@adonisjs/auth",
+      "@adonisjs/lucid",
+    ]
+  }
+}

@@ -1,0 +1,14 @@
+{
+    "name": "web-template",
+    "private": true,
+    "scripts": {
+        "dev": "concurrently \"npm --prefix front run dev\" \"npm --prefix back run dev\""
+    },
+    "devDependencies": {
+        "concurrently": "^7.6.0"
+    },
+    "dependencies": {
+        "@tailwindcss/vite": "^4.1.8",
+        "tailwindcss": "^4.1.8"
+    }
+}
