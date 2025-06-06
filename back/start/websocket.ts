@@ -3,7 +3,7 @@ import { WebSocketServer, WebSocket } from 'ws'
 // Map gameCode -> Set of client sockets and their ids
 const games: Map<string, Map<WebSocket, string>> = new Map()
 const host = "0.0.0.0"
-const port = 3334
+const port = 3300
 const wss = new WebSocketServer({ host, port })
 
 wss.on('connection', (ws) => {
@@ -84,4 +84,4 @@ wss.on('connection', (ws) => {
     })
 })
 
-console.log('WebSocket server running on ws://localhost:3334')
+console.log(`WebSocket server running on ws://${host}:${port}`)
