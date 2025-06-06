@@ -1,7 +1,7 @@
 <template>
   <div class="w-screen h-screen flex flex-col overflow-clip">
     <header
-      class="text-white px-6 py-4 flex justify-between items-center border-b-2 border-gray-400"
+      class="text-white px-6 py-4 flex justify-between items-center border-b-2 border-gray-400 z-10"
     >
       <NuxtLink
         to="/"
