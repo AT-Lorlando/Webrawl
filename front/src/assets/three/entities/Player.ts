@@ -12,7 +12,7 @@ export class Player {
   private id: string
   private linkedInstrument: Instrument | null = null
   private lastSentPosition: [number, number, number] = [0, 0, 0]
-  private readonly POSITION_THRESHOLD = 0.001
+  private readonly POSITION_THRESHOLD = 0.01
   private lastUpdateTime = 0
   private readonly UPDATE_INTERVAL = 10
 
