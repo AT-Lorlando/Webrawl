@@ -1,11 +1,13 @@
-import type { WebSocketMessage } from '../types'
+import type { WebSocketMessage, HostMessage, JoinMessage } from '../types'
 
 export class WebSocketManager {
   private ws: WebSocket
   private messageHandlers: ((msg: WebSocketMessage) => void)[] = []
+  private isConnected = false
+  private pendingMessages: WebSocketMessage[] = []
 
   constructor(
-    private url: string = '0.0.0.0',
+    private url: string = 'localhost',
     private port: number = 3300,
     private logFn?: (msg: string) => void
   ) {
@@ -17,6 +19,9 @@ export class WebSocketManager {
   private setupWebSocket() {
     this.ws.onopen = () => {
       this.logFn?.('[ws] open')
+      this.isConnected = true
+      this.pendingMessages.forEach(msg => this.send(msg))
+      this.pendingMessages = []
     }
 
     this.ws.onerror = (e) => {
@@ -25,33 +30,45 @@ export class WebSocketManager {
 
     this.ws.onclose = () => {
       this.logFn?.('[ws] close')
+      this.isConnected = false
     }
 
     this.ws.onmessage = (event) => {
       this.logFn?.('[ws] recv: ' + event.data)
       const msg = JSON.parse(event.data) as WebSocketMessage
+      console.log('onMessage', msg)
       this.messageHandlers.forEach(handler => handler(msg))
     }
   }
 
   public connect(gameCode: string, localId: string, isHost: boolean) {
-    const joinMsg: WebSocketMessage = {
+    const message: HostMessage | JoinMessage = {
       type: isHost ? 'host' : 'join',
-      gameCode,
       id: localId,
+      gameCode
     }
-    this.send(joinMsg)
+    this.send(message)
   }
 
   public send(message: WebSocketMessage) {
-    if (this.ws.readyState === WebSocket.OPEN) {
+    if (this.isConnected) {
       this.ws.send(JSON.stringify(message))
       this.logFn?.('[ws] send: ' + JSON.stringify(message))
+    } else {
+      this.pendingMessages.push(message)
     }
   }
 
   public onMessage(handler: (msg: WebSocketMessage) => void) {
     this.messageHandlers.push(handler)
+    return () => this.removeMessageHandler(handler)
+  }
+
+  public removeMessageHandler(handler: (msg: WebSocketMessage) => void) {
+    const index = this.messageHandlers.indexOf(handler)
+    if (index !== -1) {
+      this.messageHandlers.splice(index, 1)
+    }
   }
 
   public close() {

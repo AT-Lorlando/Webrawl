@@ -1,21 +1,37 @@
 export class InputManager {
   private keys: Record<string, boolean> = {}
+  private keyPressedThisFrame: Set<string> = new Set()
 
   constructor() {
     this.setupEventListeners()
   }
 
   private setupEventListeners() {
-    window.addEventListener('keydown', e => this.handleKey(e, true))
-    window.addEventListener('keyup', e => this.handleKey(e, false))
+    window.addEventListener('keydown', e => this.handleKeyDown(e))
+    window.addEventListener('keyup', e => this.handleKeyUp(e))
   }
 
-  private handleKey(e: KeyboardEvent, down: boolean) {
-    this.keys[e.code] = down
+  private handleKeyDown(e: KeyboardEvent) {
+    if (!this.keys[e.code]) {
+      this.keyPressedThisFrame.add(e.code)
+    }
+    this.keys[e.code] = true
+  }
+
+  private handleKeyUp(e: KeyboardEvent) {
+    this.keys[e.code] = false
   }
 
   public isKeyPressed(code: string): boolean {
     return this.keys[code] || false
+  }
+
+  public wasKeyPressedThisFrame(code: string): boolean {
+    return this.keyPressedThisFrame.has(code)
+  }
+
+  public clearKeyPressedThisFrame() {
+    this.keyPressedThisFrame.clear()
   }
 
   public getMovement(): { x: number, z: number } {
@@ -32,11 +48,11 @@ export class InputManager {
   }
 
   public isJumpPressed(): boolean {
-    return this.isKeyPressed('Space')
+    return this.wasKeyPressedThisFrame('Space')
   }
 
   public cleanup() {
-    window.removeEventListener('keydown', e => this.handleKey(e, true))
-    window.removeEventListener('keyup', e => this.handleKey(e, false))
+    window.removeEventListener('keydown', e => this.handleKeyDown(e))
+    window.removeEventListener('keyup', e => this.handleKeyUp(e))
   }
 } 

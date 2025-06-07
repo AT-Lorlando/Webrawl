@@ -23,7 +23,7 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
-import initThreeScene from '~/assets/three/gameScene'
+import initThreeScene from '~/assets/three/main'
 
 const container = ref<HTMLElement | null>(null)
 const connected = ref(false)
