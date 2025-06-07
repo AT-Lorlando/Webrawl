@@ -14,6 +14,7 @@ export class Instrument {
 
   constructor(
     private scene: THREE.Scene,
+    private camera: THREE.PerspectiveCamera,
     private wsManager: WebSocketManager,
     private gameCode: string,
     private id: string,
@@ -26,7 +27,7 @@ export class Instrument {
     this.mesh.position.set(...position)
     scene.add(this.mesh)
 
-    this.audioManager = new AudioManager()
+    this.audioManager = new AudioManager(scene, this.camera, true)
     this.setupMessageHandler()
   }
 

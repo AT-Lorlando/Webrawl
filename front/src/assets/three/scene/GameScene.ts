@@ -19,7 +19,7 @@ export class GameScene {
   constructor(private config: GameConfig) {
     this.scene = new THREE.Scene()
     this.scene.background = new THREE.Color(0x222222)
-
+    
     this.setupCamera()
     this.setupRenderer()
     this.setupLights()
@@ -46,6 +46,7 @@ export class GameScene {
     instrumentPositions.forEach((position, index) => {
       const instrument = new Instrument(
         this.scene,
+        this.camera,
         this.wsManager,
         this.config.gameCode,
         `instrument_${index}`,
