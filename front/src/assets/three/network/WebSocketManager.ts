@@ -7,7 +7,7 @@ export class WebSocketManager {
   private pendingMessages: WebSocketMessage[] = []
 
   constructor(
-    private url: string = 'localhost',
+    private url: string = '0.0.0.0',
     private port: number = 3300,
     private logFn?: (msg: string) => void
   ) {

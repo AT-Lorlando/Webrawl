@@ -17,7 +17,7 @@ export interface WebSocketMessage {
 
 // Map gameCode -> Map of client sockets to Player
 const games: Map<string, Map<WebSocket, Player>> = new Map()
-const host = "localhost"
+const host = "0.0.0.0"
 const port = 3300
 const wss = new WebSocketServer({ host, port })
 

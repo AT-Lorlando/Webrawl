@@ -14,6 +14,9 @@
         <p>Share this code with friends to join your game.</p>
       </div>
       <div ref="container" class="three-container"></div>
+      <div class="volume-slider">
+        <input type="range" min="0" max="1" step="0.01" id="volume-slider"/>
+      </div>
       <div class="ws-log">
         <div v-for="(entry, i) in log" :key="i">{{ entry }}</div>
       </div>
@@ -88,5 +91,12 @@ function connect(code: string, isHost: boolean) {
   z-index: 10;
   padding: 8px 12px;
   border-bottom-right-radius: 8px;
+}
+
+.volume-slider {
+  position: absolute;
+  top: 0;
+  right: 0;
+  z-index: 10;
 }
 </style>

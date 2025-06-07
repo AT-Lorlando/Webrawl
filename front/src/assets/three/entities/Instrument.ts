@@ -31,6 +31,10 @@ export class Instrument {
     this.setupMessageHandler()
   }
 
+  public setVolume(volume: number) {
+    this.audioManager.setVolume(volume)
+  }
+
   private setupMessageHandler() {
     this.messageHandler = (msg: WebSocketMessage) => {
       if (msg.type === 'instrument_note' && 
@@ -71,6 +75,9 @@ export class Instrument {
   public playNote(noteName: string) {
     if (this.linkedPlayerId) {
       const noteId = getNoteIdByName(noteName)
+      if (noteId !== undefined) {
+        this.audioManager.playNote(noteId)
+      }
       if (noteId !== undefined) {
         this.wsManager.send({
           type: 'instrument_note',

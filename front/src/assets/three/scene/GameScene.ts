@@ -19,7 +19,7 @@ export class GameScene {
   constructor(private config: GameConfig) {
     this.scene = new THREE.Scene()
     this.scene.background = new THREE.Color(0x222222)
-    
+
     this.setupCamera()
     this.setupRenderer()
     this.setupLights()
@@ -33,6 +33,7 @@ export class GameScene {
     this.setupWebSocketHandlers()
     this.setupResizeHandler()
     this.animate()
+    this.setupVolumeSlider()
   }
 
   private setupInstruments() {
@@ -167,5 +168,16 @@ export class GameScene {
       this.renderer.domElement.parentNode.removeChild(this.renderer.domElement)
     }
     this.wsManager.close()
+  }
+
+  // add event listener for volume slider
+  private setupVolumeSlider() {
+    const volumeSlider = document.getElementById('volume-slider')
+    if (volumeSlider) {
+      volumeSlider.addEventListener('input', (e) => {
+        const target = e.target as HTMLInputElement
+        this.instruments.forEach(instrument => instrument.setVolume(Number(target.value)))
+      })
+    }
   }
 } 
