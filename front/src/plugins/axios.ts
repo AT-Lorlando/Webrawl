@@ -1,6 +1,5 @@
 import axios from 'axios';
 import { defineNuxtPlugin, useRuntimeConfig } from '#app';
-import { useAuthStore } from '~/stores/auth';
 
 export default defineNuxtPlugin((nuxtApp) => {
   const config = useRuntimeConfig();
@@ -10,8 +9,8 @@ export default defineNuxtPlugin((nuxtApp) => {
 
   axiosInstance.interceptors.request.use(
     (request) => {
-      const authStore = useAuthStore();
-      const token = authStore.token;
+      // Obtenir le token directement depuis localStorage
+      const token = localStorage.getItem('token');
       if (token) {
         request.headers['Authorization'] = `Bearer ${token}`;
       }

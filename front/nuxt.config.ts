@@ -13,6 +13,7 @@ export default defineNuxtConfig({
   ],
   plugins: ['~/plugins/axios.ts'],
   devtools: { enabled: true },
+  ssr: false,
   css: ['~/assets/css/main.css', '~/assets/css/tailwind.css'],
   runtimeConfig: {
     public: {
