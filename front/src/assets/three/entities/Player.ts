@@ -1,4 +1,5 @@
 import * as THREE from 'three'
+import { CSS3DObject } from 'three/addons/renderers/CSS3DRenderer.js'
 import { Physics } from '../physics/Physics'
 import { InputManager } from '../controls/InputManager'
 import { WebSocketManager } from '../network/WebSocketManager'
@@ -15,12 +16,17 @@ export class Player {
   private readonly POSITION_THRESHOLD = 0.01
   private lastUpdateTime = 0
   private readonly UPDATE_INTERVAL = 10
+  private label: CSS3DObject
+  private labelElement: HTMLDivElement
 
   constructor(
     private scene: THREE.Scene,
+    private cssScene: THREE.Scene,
+    private camera: THREE.PerspectiveCamera,
     private wsManager: WebSocketManager,
     private gameCode: string,
     private isLocal: boolean = false,
+    private playerName: string = 'Player',
     private color: THREE.Color = new THREE.Color(0x00ff00)
   ) {
     this.id = Math.random().toString(36).slice(2)
@@ -32,15 +38,56 @@ export class Player {
     this.mesh = new THREE.Mesh(geometry, material)
     scene.add(this.mesh)
 
+    // Create CSS3D label
+    this.labelElement = document.createElement('div')
+    this.labelElement.className = 'player-label'
+    this.labelElement.textContent = this.playerName
+    this.labelElement.style.cssText = `
+      color: white;
+      font-family: Arial, sans-serif;
+      font-size: 16px;
+      font-weight: bold;
+      text-align: center;
+      background: rgba(0, 0, 0, 0.7);
+      padding: 4px 8px;
+      border-radius: 4px;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      pointer-events: none;
+      user-select: none;
+      text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
+      transform-origin: center center;
+    `
+
+    this.label = new CSS3DObject(this.labelElement)
+    this.label.position.set(0, 1, 0) // Position above the player
+    this.label.scale.set(0.01, 0.01, 0.01) // Scale down the HTML element to fit 3D world
+    this.cssScene.add(this.label)
+    this.updateLabelPosition()
+
     if (isLocal) {
       this.wsManager.connect(gameCode, this.id, false)
       this.wsManager.onMessage(this.handleMessage.bind(this))
     }
   }
 
+  private updateLabelPosition() {
+    // Position the label above the player mesh
+    this.label.position.copy(this.mesh.position)
+    this.label.position.y += 1 // Offset above the player
+    
+    // Make the label always face the camera
+    this.label.lookAt(this.camera.position)
+  }
+
+  public updateLabelOrientation() {
+    // Public method to update label orientation from GameScene
+    this.updateLabelPosition()
+  }
+
   private handleMessage(msg: WebSocketMessage) {
     if (msg.type === 'state' && msg.id !== this.id) {
       this.mesh.position.set(...msg.position!)
+      this.updateLabelPosition()
     }
   }
 
@@ -62,13 +109,20 @@ export class Player {
   public update(instruments: Instrument[]) {
     if (this.isLocal) {
       if (this.linkedInstrument) {
-        this.handleInstrumentInput()
+        // Ancien système désactivé - utilise maintenant le piano acoustique directement
+        // this.handleInstrumentInput()
+        
+        // Gestion de déliaison avec Shift
+        if (this.inputManager.wasKeyPressedThisFrame('ShiftLeft')) {
+          this.unlinkInstrument()
+        }
       } else {
         const movement = this.inputManager.getMovement()
         const shouldJump = this.inputManager.isJumpPressed()
         const newPosition = this.physics.update(movement, shouldJump)
         
         this.mesh.position.set(...newPosition)
+        this.updateLabelPosition()
         
         if (this.inputManager.wasKeyPressedThisFrame('ShiftLeft')) {
           const nearbyInstrument = instruments.find(instrument => 
@@ -97,8 +151,8 @@ export class Player {
 
   private handleInstrumentInput() {
     const noteMap: Record<string, string> = {
-      'KeyA': 'A',
-      'KeyZ': 'Z',
+      'KeyQ': 'Q',
+      'KeyW': 'W',
       'KeyE': 'E',
       'KeyR': 'R',
       'KeyT': 'T',
@@ -147,10 +201,12 @@ export class Player {
 
   public setPosition(position: [number, number, number]) {
     this.mesh.position.set(...position)
+    this.updateLabelPosition()
   }
 
   public cleanup() {
     this.scene.remove(this.mesh)
+    this.cssScene.remove(this.label)
     this.mesh.geometry.dispose()
     ;(this.mesh.material as THREE.Material).dispose()
     if (this.isLocal) {

@@ -44,7 +44,7 @@ export const useAuthStore = defineStore('auth', {
             email: response.data.email,
           };
         } catch (error) {
-          this.logout();
+        this.logout();
         }
       }
     },

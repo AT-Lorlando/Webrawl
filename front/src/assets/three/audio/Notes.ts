@@ -5,8 +5,8 @@ export interface Note {
 }
 
 export const NOTES: Note[] = [
-  { id: 0, name: 'A', frequency: 440.00 },  // La4
-  { id: 1, name: 'Z', frequency: 493.88 },  // Si4
+  { id: 0, name: 'Q', frequency: 440.00 },  // La4
+  { id: 1, name: 'W', frequency: 493.88 },  // Si4
   { id: 2, name: 'E', frequency: 523.25 },  // Do5
   { id: 3, name: 'R', frequency: 554.37 },  // Do#5
   { id: 4, name: 'T', frequency: 587.33 },  // Ré5
